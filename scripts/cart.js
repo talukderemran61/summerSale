@@ -78,16 +78,14 @@ const purchaseButton = document.getElementById('btn-purchase');
 
 purchaseButton.addEventListener('click', () => {
     console.log('Purchase button clicked');
+    modal.classList.remove('hidden');
     modal.showModal();
 });
 
 goHomeButton.addEventListener('click', () => {
     console.log('Go Home button clicked');
+    modal.classList.add('hidden');
     modal.close();
-});
-
-modal.addEventListener('close', () => {
-    console.log('Modal closed');
 });
 
 // document.getElementById('coupon-field').addEventListener('input', function(){
