@@ -1,47 +1,61 @@
-function addItemToCart(cardTitle){
-    const cartTitleList = document.getElementById('selected-items');
+const selectedItems = document.getElementById('selected-items');
+const cardsContainer = document.getElementById('cards-container');
+const totalPriceElement = document.getElementById('total-price');
+const totalPayableElement = document.getElementById('total-payable');
+const cartDivider = document.getElementById('hidden-line');
 
-    const count = cartTitleList.childElementCount;
+// add item to cart
+function addItemToCart(card){
+    const cardTitleId = card.getAttribute('data-title');
+    const cardPriceId = card.getAttribute('data-price');
 
-    const card1Title = document.getElementById(cardTitle).innerText;
+    const listItem = document.createElement('li');
+    listItem.innerHTML = `
+    <p><span class="serial-number">${selectedItems.childElementCount + 1}</span>. ${document.getElementById(cardTitleId).innerText}</p> <i id="trash-can" class="fa-solid fa-trash-can text-red-500"></i>
+    `;
+    
+    listItem.classList.add('cart-item', 'flex', 'items-center', 'justify-between');
+    listItem.setAttribute('data-price', document.getElementById(cardPriceId).innerText);
+    selectedItems.appendChild(listItem);
 
-    const li = document.createElement('li');
-    li.innerText = (`${count + 1}. ${card1Title}`);
-    cartTitleList.appendChild(li);
-
-    document.getElementById('hidden-line').style.display = 'block';
+    cartDivider.style.display = 'block';
 }
 
-function updateTotalPrice(itemPriceId){
+
+//update total-Price & total-payable
+function updateTotalPrice(card){
     // total price
     const totalPriceElement = document.getElementById('total-price');
     const previousTotalPriceText = totalPriceElement.innerText;
     const previousTotalPrice = parseFloat(previousTotalPriceText);
-    console.log(previousTotalPrice);
 
-    const itemPriceText = document.getElementById(itemPriceId).innerText;
+    const cardPriceId = card.getAttribute('data-price');
+    const itemPriceText = document.getElementById(cardPriceId).innerText;
     const itemPrice = parseFloat(itemPriceText);
-    console.log(itemPrice);
 
-    var newTotalPrice = previousTotalPrice + itemPrice;
-    console.log(newTotalPrice);
-
+    const newTotalPrice = previousTotalPrice + itemPrice;
     totalPriceElement.innerText = newTotalPrice;
+
+    //update total_payable
+    totalPayableElement.innerText = newTotalPrice;
 
     // reset discount to Zero
     const discountElement = document.getElementById('discount');
     discountElement.innerText = '00';
 
-    // coupon button activation
+    // coupon button & purchase button activation
     const btnCoupon = document.getElementById('btn-coupon');
+    const purchaseButton = document.getElementById('btn-purchase');
 
     if(newTotalPrice !== 0){
         couponCodeBtnActivation();
+
+        buttonActivate(purchaseButton);
     }
     else{
-        btnCoupon.disabled = true;
-        btnCoupon.classList.add('bg-pink-300', 'border-pink-300');
-        btnCoupon.classList.remove('bg-pink-500', 'border-pink-500', 'hover:bg-pink-600');
+        buttonDisable(btnCoupon);
+
+        buttonDisable(purchaseButton);
     }
 
     // clear coupon code Field
@@ -50,15 +64,18 @@ function updateTotalPrice(itemPriceId){
 
     // Alert container remove
     const couponInvalid = document.getElementById('coupon-invalid');
+    const couponInvalidMinCheckout = document.getElementById('coupon-invalid-min-checkout');
     const couponContainer = document.getElementById('coupon-container');
 
     couponInvalid.classList.add('hidden');
+    couponInvalidMinCheckout.classList.add('hidden');
     couponContainer.classList.add('mt-3');
 }
 
+
+// coupon btn activate/disable
 function couponCodeBtnActivation(){
     const btnCoupon = document.getElementById('btn-coupon');
-
     const couponField = document.getElementById('coupon-field');
     const couponCode = couponField.value;
 
@@ -66,13 +83,53 @@ function couponCodeBtnActivation(){
     const totalPrice = parseFloat(totalPriceElement.innerText);
 
     if(couponCode !== '' && totalPrice !== 0){
-        btnCoupon.disabled = false;
-        btnCoupon.classList.remove('bg-pink-300', 'border-pink-300');
-        btnCoupon.classList.add('bg-pink-500', 'border-pink-500', 'hover:bg-pink-600');
+        buttonActivate(btnCoupon);
     }
     else{
-        btnCoupon.disabled = true;
-        btnCoupon.classList.add('bg-pink-300', 'border-pink-300');
-        btnCoupon.classList.remove('bg-pink-500', 'border-pink-500', 'hover:bg-pink-600');
+        buttonDisable(btnCoupon);
     }
+}
+
+
+//button activate/disable
+function buttonActivate(btnName){
+    btnName.disabled = false;
+    btnName.classList.remove('bg-pink-300', 'border-pink-300');
+    btnName.classList.add('bg-pink-500', 'border-pink-500', 'hover:bg-pink-600'); 
+}
+function buttonDisable(btnName){
+    btnName.disabled = true;
+    btnName.classList.add('bg-pink-300', 'border-pink-300');
+    btnName.classList.remove('bg-pink-500', 'border-pink-500', 'hover:bg-pink-600'); 
+}
+
+
+// remove item from cart
+function removeItemFromCart(listItem){
+    const cartItemPrice = parseFloat(listItem.getAttribute('data-price'));
+    const previousTotalPrice = parseFloat(totalPriceElement.innerText);
+    const totalPrice = previousTotalPrice - cartItemPrice;
+
+    totalPriceElement.innerText = totalPrice;
+    totalPayableElement.innerText = totalPrice;
+    
+    listItem.remove();
+    updateItemsSerial();
+
+    if(selectedItems.childElementCount === 0){
+        cartDivider.style.display = 'none';
+        buttonDisable(purchaseButton);
+    }
+    else{
+        cartDivider.style.display = 'block';
+    }
+}
+
+//update cart items serial
+function updateItemsSerial(){
+    const cartItems = selectedItems.querySelectorAll('.cart-item');
+    cartItems.forEach((item, index) => {
+        const serialNumberElement = item.querySelector('.serial-number')
+        serialNumberElement.innerText = `${index + 1}`;
+    })
 }
