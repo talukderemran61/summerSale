@@ -19,14 +19,14 @@ document.getElementById('btn-coupon').addEventListener('click', function () {
     const couponInvalid = document.getElementById('coupon-invalid');
     const couponInvalidMinCheckout = document.getElementById('coupon-invalid-min-checkout');
     const couponContainer = document.getElementById('coupon-container');
-    if (couponCode === 'SALE200' && totalPrice >= 200) {
+    if (couponCode.toUpperCase() === 'SALE200' && totalPrice >= 200) {
         const discountPrice = totalPrice * 0.2;
         discountElement.innerText = discountPrice.toFixed(2);
 
         const newTotalPayable = totalPrice - discountPrice;
         totalPayableElement.innerText = newTotalPayable;
     }
-    else if(couponCode === 'SALE200' && totalPrice < 200){
+    else if(couponCode.toUpperCase() === 'SALE200' && totalPrice < 200){
         couponInvalidMinCheckout.classList.remove('hidden');
         couponContainer.classList.remove('mt-3'); 
     }
