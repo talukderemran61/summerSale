@@ -25,14 +25,34 @@ document.getElementById('btn-coupon').addEventListener('click', function () {
 
         const newTotalPayable = totalPrice - discountPrice;
         totalPayableElement.innerText = newTotalPayable;
+
+        // remove alert message
+        couponInvalid.classList.add('hidden');
+        couponInvalidMinCheckout.classList.add('hidden');
+        couponContainer.classList.add('mt-3');
+
+        // clear couponField
+        couponField.value = '';
     }
     else if(couponCode.toUpperCase() === 'SALE200' && totalPrice < 200){
         couponInvalidMinCheckout.classList.remove('hidden');
         couponContainer.classList.remove('mt-3'); 
+
+        // remove wrong coupon alert
+        couponInvalid.classList.add('hidden');
+
+        // clear couponField
+        couponField.value = '';
     }
     else {
         couponInvalid.classList.remove('hidden');
         couponContainer.classList.remove('mt-3');
+
+        // remove mincheckout alert
+        couponInvalidMinCheckout.classList.add('hidden');
+
+        // clear couponField
+        couponField.value = '';
     }
 })
 
